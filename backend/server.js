@@ -11,12 +11,16 @@ import { Server } from "socket.io";
 const app = express();
 const server = http.createServer(app);
 
-//initialize socket.io server
+//initialize socket.io server (restrict to frontend domain)
 export const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: {
+    origin: "https://chatapplication-blue-two.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    credentials: true,
+  },
 });
 
-//store online user
+//store online users
 export const userSocketMap = {};
 
 //Socket.io connection handler
@@ -26,7 +30,7 @@ io.on("connection", (socket) => {
 
   if (userId) userSocketMap[userId] = socket.id;
 
-  //Emit online users to all connected client
+  //Emit online users to all connected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
@@ -38,17 +42,20 @@ io.on("connection", (socket) => {
 
 //middleware
 app.use(express.json({ limit: "4mb" }));
+
+// ✅ Allow only your Vercel frontend
 app.use(
   cors({
-    origin: "https://chatapplication-ba6h0wmcr-vishal-jains-projects-0824b7ee.vercel.app",
+    origin: "https://chatapplication-blue-two.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     credentials: true,
   })
 );
+
+//routes
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
-//routes setup
 app.use("/api/status", (req, res) => res.send("Server is live."));
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
@@ -57,9 +64,9 @@ app.use("/api/messages", messageRouter);
 await connectDB();
 const PORT = process.env.PORT || 5000;
 
- server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
-  });
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
+});
 
 //export server for vercel
 export default server;
