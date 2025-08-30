@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
 app.use(express.json({ limit: "4mb" }));
 app.use(
   cors({
-    origin: "https://chatapplication-blue-two.vercel.app",
+    origin: "https://chatapplication-ba6h0wmcr-vishal-jains-projects-0824b7ee.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     credentials: true,
   })
