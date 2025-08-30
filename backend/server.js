@@ -45,7 +45,9 @@ app.use(
     credentials: true,
   })
 );
-
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 //routes setup
 app.use("/api/status", (req, res) => res.send("Server is live."));
 app.use("/api/auth", userRouter);
